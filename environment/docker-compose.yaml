@@ -1,0 +1,50 @@
+services:
+  # Using docker-compose we don't need to create a network since it is already created
+  # Also, the name of the services is the name to access from one container to the other.
+  pgdatabase:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=my_data_db
+    # Mapping this location to the filesystem, so we can communicate with the container.
+    volumes:
+      - "$HOME/tmp/projects/1/postgresql/my_data_db_postgres_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes:
+      # Save the state of the query tool and connections locally. Source: https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html
+      - "$HOME/tmp/projects/1/pgadmin/:/var/lib/pgadmin/:rw"
+    ports:
+      - "8080:80"
+
+  # Adding Metabase for Data Visualization https://www.metabase.com/start/oss/
+  # docker-compose: https://www.metabase.com/docs/latest/installation-and-operation/running-metabase-on-docker#use-docker-secrets-to-hide-sensitive-parameters
+  # Ref video: https://www.youtube.com/watch?v=BnLkrA7a6gM&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=40
+  # docker run -d -v ~/my-metabase-db:/metabase.db --name metabase -e MB_DB_FILE=/metabase.db -e MUID=$UID -e MGID=$GID -p 3000:3000 metabase/metabase
+  metabase:
+    image: metabase/metabase
+    #container_name: metabase
+    #hostname: metabase
+    restart: on-failure
+    environment:
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=my_data_db
+      - MB_DB_PORT=5432
+      - MB_DB_USER=root
+      - MB_DB_PASS=root
+      - MB_DB_HOST=pgdatabase                 # name of the service
+      - MB_DB_FILE=/metabase-data/metabase.db
+    depends_on:
+      - pgdatabase
+    # links:
+    #  - pgdatabase
+   # volumes:
+   #   - "$HOME/tmp/projects/1/metabase/metabase-data:/metabase-data:rw"
+    ports:
+      - "3000:3000"
