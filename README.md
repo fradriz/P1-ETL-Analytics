@@ -47,6 +47,16 @@ Open a browser and:
 
 From now own we have the connections between the DB and the Visualization tool.
 
+## Dataset
+Using the [World Development Data from the WorldBank](https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators)
+```
+The World Development Indicators (WDI) is the primary World Bank collection of development indicators, compiled from officially-recognized international sources. 
+It presents the most current and accurate global development data available, and includes national, regional and global estimates.
+```
+
+- OBS I: I have downloaded, unzip and compress again some files with bzip2: `bzip2 WDIData.csv`
+- OBS II: Spark can split the compress data whith bzip2 (not with zip or gzip)
+
 ### Close docker compose
 ```shell
 $ docker compose down
