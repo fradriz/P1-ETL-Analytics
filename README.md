@@ -9,7 +9,7 @@
 Run: `source p1env/bin/activate` (where `p1env` is the name of the virtualenv)
 
 ### Docker compose
-Go to the _environment_ folder and run:
+From the terminal, go to the [_environment_](environment) folder and run:
 ```shell
 $ docker compose up -d
 [+] Building 0.0s (0/0)                                                                                                                                                   docker:desktop-linux
@@ -17,7 +17,10 @@ $ docker compose up -d
  ✔ Network environment_default         Created                                                                                                                                            0.1s
  ✔ Container environment-pgadmin-1     Started                                                                                                                                            0.1s
  ✔ Container environment-pgdatabase-1  Started                                                                                                                                            0.1s
- ✔ Container environment-metabase-1    Started                                                                                                                                            0.0s
+ ✔ Container environment-metabase-1    Started                                                                                                                                          0.0s
+```
+We should see three services started: Metabase, Postgres and Pgadmin UI.
+```
 (p1env) ➜  environment git:(main) ✗ docker ps
 CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                           NAMES
 babc029c934c   metabase/metabase   "/app/run_metabase.sh"   12 seconds ago   Up 11 seconds   0.0.0.0:3000->3000/tcp          environment-metabase-1
@@ -55,9 +58,10 @@ It presents the most current and accurate global development data available, and
 ```
 
 - OBS I: I have downloaded, unzip and compress again some files with bzip2: `bzip2 WDIData.csv`
-- OBS II: Spark can split the compress data whith bzip2 (not with zip or gzip)
+- OBS II: Spark can split the compress data with bzip2 (not with zip or gzip)
 
 ### Close docker compose
+After finish, shut down the dockers containers by running:
 ```shell
 $ docker compose down
 [+] Running 4/4
@@ -66,3 +70,6 @@ $ docker compose down
  ✔ Container environment-pgdatabase-1  Removed                                                                                                                                            0.2s
  ✔ Network environment_default         Removed
 ```
+
+If the volumes folder in the [docker-compose](environment/docker-compose.yaml) file is preserved, then the data and relations created previously will be there for the next session. 
+Meaning: everything is preserved despite shutting down the containers.
