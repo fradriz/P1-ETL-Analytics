@@ -48,7 +48,7 @@ Open a browser and:
   * Username: __root__ (docker file `POSTGRES_USER`)
   * Password: __root__ (docker file `POSTGRES_PASSWORD`)
 
-From now own we have the connections between the DB and the Visualization tool.
+From now own, we have the connections between the DB and the Visualization tool.
 
 ## Dataset
 Using the [World Development Data from the WorldBank](https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators)
@@ -75,3 +75,8 @@ $ docker compose down
 
 If the volumes folder in the [docker-compose](environment/docker-compose.yaml) file is preserved, then the data and relations created previously will be there for the next session. 
 Meaning: everything is preserved despite shutting down the containers.
+
+# PENDING
+* [Postgres UPSERT](https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-upsert/)
+
+Link: https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html

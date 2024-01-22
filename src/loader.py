@@ -20,11 +20,26 @@ def read_input_data(spark, path):
     return spark.read.csv(path, header=True, inferSchema=True)
 
 
-def load_data_to_postgres(df, table_name):
-    print(f"Creating table in Postgres and loading to {table_name}")
-    db_name = "my_data_db"
+def load_data_to_postgres(df, table_name, postgres_schema='public', db_name="my_data_db"):
+    """
+     Postgres uses this hierarchy: DataBase > Schema (namespace) > Tables
+
+    :param df: spark dataframe to load into postgres
+    :param table_name: s.e. (self-explanatory)
+    :param postgres_schema: The schema must exist in the DB ('CREATE SCHEMA <schema_name>'). If not, will throw an error
+    :param db_name: s.e.
+    :return: None
+    """
+    # my_db_schema = "my_db_schema"
+    # table_name = "empresa.my_table"
+    table = f"{postgres_schema}.{table_name}"
+    rep = 100
+    count = df.count()
+    print("-" * rep)
+    print(f"Loading {count:,} records to '{table}' in Postgres DB")
 
     url = f"jdbc:postgresql://localhost:5432/{db_name}"
+    # url = f"jdbc:postgresql://localhost:5432/{db_name}?currentSchema={my_db_schema}"
     properties = {
         "user": "root",
         "password": "root",
@@ -33,11 +48,15 @@ def load_data_to_postgres(df, table_name):
 
     df.write.jdbc(
         url=url,
-        table=table_name,
+        table=table,
+        # mode='ignore',              # If table (empty or not) exists, it will do nothing
+        # mode='errorifexists',       # Table or view 'test_data' already exists. SaveMode: ErrorIfExists
+        # mode='append',
         mode="overwrite",
         properties=properties)
 
-    print(f"Done with {table_name}")
+    print(f"Done with table '{table}'")
+    print("-" * rep)
 
 
 def pivot_df(df: dataframe) -> dataframe:
@@ -66,6 +85,11 @@ def pivot_df(df: dataframe) -> dataframe:
     """
 
     def _map_content(df):
+        """
+        Build the structure for map without writing all the columns.
+        :param df:
+        :return:
+        """
         columns = df.columns
         r = []
         for c in columns:
@@ -93,13 +117,19 @@ def main():
     print("Reading the input data")
     base_path = "../data/input/"
 
-    raw_df = read_input_data(spark, path=base_path + "WDIData.csv.bz2").drop("_c67")
-    pivoted_df = pivot_df(raw_df)
-    pivoted_df.show(3)
+    WDIData_df = read_input_data(spark, path=base_path + "WDIData.csv.bz2").drop("_c67")
+    pivoted_df = pivot_df(WDIData_df)
+    # pivoted_df.show(3)
 
     try:
-        load_data_to_postgres(raw_df, table_name="aa_wdi_raw")
-        load_data_to_postgres(pivoted_df, table_name="aa_wdi_transformed")
+        # load_data_to_postgres(WDIData_df, table_name="aa_WDIData_raw")
+        # load_data_to_postgres(pivoted_df, table_name="aa_WDIData_transformed")
+
+        # df = WDIData_df.filter("`Country Code`='AFG'")
+        df = WDIData_df.filter("`Country Code`='BRA'").limit(5)
+        df.select(df.columns[0:10]).show(5)
+        load_data_to_postgres(df, table_name="test_data")
+
     except Exception as e:
         print(f"ERROR - Can't load the data to Postgres: {e}")
 
