@@ -17,7 +17,7 @@ def set_spark():
 
 
 def read_input_data(spark, path):
-    return spark.read.csv(path, header=True, inferSchema=True)
+    return spark.read.csv(path, header=True, inferSchema=True, multiLine=True)
 
 
 def load_data_to_postgres(df, table_name, postgres_schema='public', db_name="my_data_db"):
@@ -116,19 +116,18 @@ def main():
     spark = set_spark()
     print("Reading the input data")
     base_path = "../data/input/"
+    postgres_schema = "world_bank"
 
-    WDIData_df = read_input_data(spark, path=base_path + "WDIData.csv.bz2").drop("_c67")
-    pivoted_df = pivot_df(WDIData_df)
+    # WDIData_df = read_input_data(spark, path=base_path + "WDIData.csv.bz2").drop("_c67")
+    WDICountry_df = read_input_data(spark, path=base_path + "WDICountry.csv").drop("_c30")
+
+    # pivoted_df = pivot_df(WDIData_df)
     # pivoted_df.show(3)
 
     try:
         # load_data_to_postgres(WDIData_df, table_name="aa_WDIData_raw")
         # load_data_to_postgres(pivoted_df, table_name="aa_WDIData_transformed")
-
-        # df = WDIData_df.filter("`Country Code`='AFG'")
-        df = WDIData_df.filter("`Country Code`='BRA'").limit(5)
-        df.select(df.columns[0:10]).show(5)
-        load_data_to_postgres(df, table_name="test_data")
+        load_data_to_postgres(WDICountry_df, table_name="country", postgres_schema=postgres_schema)
 
     except Exception as e:
         print(f"ERROR - Can't load the data to Postgres: {e}")
