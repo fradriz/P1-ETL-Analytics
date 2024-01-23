@@ -12,12 +12,12 @@ Run: `source p1env/bin/activate` (where `p1env` is the name of the virtualenv)
 From the terminal, go to the [_environment_](environment) folder and run:
 ```shell
 $ docker compose up -d
-[+] Building 0.0s (0/0)                                                                                                                                                   docker:desktop-linux
+[+] Building 0.0s (0/0)                                   docker:desktop-linux
 [+] Running 4/4
- ✔ Network environment_default         Created                                                                                                                                            0.1s
- ✔ Container environment-pgadmin-1     Started                                                                                                                                            0.1s
- ✔ Container environment-pgdatabase-1  Started                                                                                                                                            0.1s
- ✔ Container environment-metabase-1    Started                                                                                                                                          0.0s
+ ✔ Network environment_default         Created                            0.1s
+ ✔ Container environment-pgadmin-1     Started                            0.1s
+ ✔ Container environment-pgdatabase-1  Started                            0.1s
+ ✔ Container environment-metabase-1    Started                            0.0s
 ```
 We should see three services started: Metabase, Postgres and Pgadmin UI.
 ```
@@ -38,8 +38,12 @@ Open a browser and:
     * Connections > Host name/address: __pgdatabase__ 
     * Connections > Maintenance database: __my_data_db__ (name is in the docker file `POSTGRES_DB`)
     * Connections > Username = __root__ / Password = __root__
+
+
 * Open Metabase: http://localhost:3000/setup
-  * Follow the instructions and create and remember the passwd: __root1234__ (remember it!)
+  * Follow the instructions and create and remember the user/passwd:
+    * user: __admin@admin.com__
+    * __root1234__ (remember it!)
   * Connect to _PostgreSQL_
   * Display Name: __MyData__
   * Host: __pgdatabase__
@@ -75,6 +79,13 @@ $ docker compose down
 
 If the volumes folder in the [docker-compose](environment/docker-compose.yaml) file is preserved, then the data and relations created previously will be there for the next session. 
 Meaning: everything is preserved despite shutting down the containers.
+
+# BI Tool - Metabase
+We can perform many charts and dashboards based on the data we've got. Here is an example:
+
+![img.png](resources/imgs/img.png)
+
+OBS: This is shown as an example, data in the chart have not been checked.
 
 # PENDING
 * [Postgres UPSERT](https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-upsert/)
